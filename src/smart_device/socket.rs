@@ -1,9 +1,11 @@
 use num_traits::FromPrimitive;
+use std::fmt;
 
+use crate::report::Report;
 use crate::utils::random::{RandomGenerator, SimpleRandomGenerator};
 use crate::utils::trait_alias::{Number, RandomNumber};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SocketState {
     ON,
     OFF,
@@ -26,6 +28,7 @@ pub trait Socket<PowerT: Number> {
     fn get_power(&mut self) -> PowerT;
 }
 
+#[derive(Debug)]
 pub struct PowerSocket<PowerT: RandomNumber> {
     state: SocketState,
     max_power_offset: PowerT,
@@ -33,7 +36,7 @@ pub struct PowerSocket<PowerT: RandomNumber> {
     random_offset_generator: SimpleRandomGenerator<PowerT>,
 }
 
-impl<PowerT: RandomNumber + FromPrimitive> Socket<PowerT> for PowerSocket<PowerT> {
+impl<PowerT: RandomNumber + FromPrimitive + fmt::Debug> Socket<PowerT> for PowerSocket<PowerT> {
     const DEFAULT_INACTIVE_POWER: PowerT = PowerT::ZERO;
 
     fn new(default_active_power: PowerT, max_power_offset: PowerT) -> Self {
@@ -75,5 +78,14 @@ impl<PowerT: RandomNumber + FromPrimitive> Socket<PowerT> for PowerSocket<PowerT
             }
             SocketState::OFF => Self::DEFAULT_INACTIVE_POWER,
         }
+    }
+}
+
+impl<PowerT: RandomNumber + fmt::Debug> Report for PowerSocket<PowerT> {
+    fn report(&self) -> String {
+        format!(
+            "Socket {{ state: {:?}, default_power: {:?}, max_offset: {:?} }}",
+            self.state, self.default_active_power, self.max_power_offset
+        )
     }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "smart-home"
+name = "smart-home-dynamic"
 version = "0.1.0"
 edition = "2024"
 
@@ -8,9 +8,10 @@ name = "sh"
 path = "src/lib.rs"
 
 [[bin]]
-name = "smart-home"
+name = "smart-home-dynamic"
 path = "src/bin/main.rs"
 
 [dependencies]
 num-traits = "0.2"
 rand = "0.10"
+thiserror = "2.0.18"

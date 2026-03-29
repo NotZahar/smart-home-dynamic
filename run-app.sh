@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
 		echo "Options:"
 		echo "  -r, --release    Run in release mode"
 		echo "  -d, --debug      Run in debug mode (default)"
-		echo "  -n, --name NAME  Specify binary name (default: smart-home)"
+		echo "  -n, --name NAME  Specify binary name (default: smart-home-dynamic)"
 		echo "  -h, --help       Show this help message"
 		exit 0
 		;;
@@ -29,7 +29,7 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-BINARY_FOLDER_PATH="/root/workspace/smart-home/target/$BUILD_MODE"
+BINARY_FOLDER_PATH="/root/workspace/smart-home-dynamic/target/$BUILD_MODE"
 
 if [[ ! -d "$BINARY_FOLDER_PATH" ]]; then
 	echo "Error: binary not found at $BINARY_FOLDER_PATH"
@@ -37,4 +37,4 @@ if [[ ! -d "$BINARY_FOLDER_PATH" ]]; then
 fi
 
 cd $BINARY_FOLDER_PATH
-./smart-home
+./smart-home-dynamic

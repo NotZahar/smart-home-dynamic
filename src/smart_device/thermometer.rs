@@ -1,5 +1,7 @@
 use num_traits::FromPrimitive;
+use std::fmt;
 
+use crate::report::Report;
 use crate::utils::random::{RandomGenerator, SimpleRandomGenerator};
 use crate::utils::trait_alias::{Number, RandomNumber};
 
@@ -15,6 +17,7 @@ pub trait Thermometer<TemperatureT: Number> {
     fn get_temperature(&mut self) -> TemperatureT;
 }
 
+#[derive(Debug)]
 pub struct CelsiusThermometer<TemperatureT: RandomNumber> {
     min_temperature_offset: TemperatureT,
     max_temperature_offset: TemperatureT,
@@ -22,7 +25,7 @@ pub struct CelsiusThermometer<TemperatureT: RandomNumber> {
     random_offset_generator: SimpleRandomGenerator<TemperatureT>,
 }
 
-impl<TemperatureT: RandomNumber + FromPrimitive> Thermometer<TemperatureT>
+impl<TemperatureT: RandomNumber + FromPrimitive + fmt::Debug> Thermometer<TemperatureT>
     for CelsiusThermometer<TemperatureT>
 {
     fn new(
@@ -45,5 +48,14 @@ impl<TemperatureT: RandomNumber + FromPrimitive> Thermometer<TemperatureT>
             + self
                 .random_offset_generator
                 .generate(self.min_temperature_offset, self.max_temperature_offset)
+    }
+}
+
+impl<TemperatureT: RandomNumber + fmt::Debug> Report for CelsiusThermometer<TemperatureT> {
+    fn report(&self) -> String {
+        format!(
+            "Thermometer {{ current: {:?}, offset_min: {:?}, offset_max: {:?} }}",
+            self.current_temperature, self.min_temperature_offset, self.max_temperature_offset
+        )
     }
 }

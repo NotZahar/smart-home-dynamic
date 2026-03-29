@@ -1,80 +1,40 @@
-use num_traits::FromPrimitive;
-use std::fmt::Debug;
+use std::fmt;
 
-use crate::smart_device::{CelsiusThermometer, PowerSocket, Socket, SocketState, Thermometer};
+use crate::report::Report;
+use crate::smart_device::{CelsiusThermometer, PowerSocket};
 use crate::utils::trait_alias::RandomNumber;
 
-pub trait DeviceVisitor<T: RandomNumber> {
-    fn visit_socket(&mut self, socket: &mut PowerSocket<T>);
-    fn visit_thermometer(&mut self, thermometer: &mut CelsiusThermometer<T>);
+pub enum Device<T: RandomNumber> {
+    Socket(PowerSocket<T>),
+    Thermometer(CelsiusThermometer<T>),
 }
 
-pub trait PrintVisitor {
-    #[must_use]
-    fn new(device_index: usize) -> Self;
-}
-
-pub struct PowerSocketTurnOffVisitor;
-pub struct PrintStateVisitor {
-    device_index: usize,
-}
-
-impl<T: RandomNumber + FromPrimitive> DeviceVisitor<T> for PowerSocketTurnOffVisitor {
-    fn visit_socket(&mut self, socket: &mut PowerSocket<T>) {
-        socket.turn_off();
-    }
-
-    fn visit_thermometer(&mut self, _thermometer: &mut CelsiusThermometer<T>) {
-        // NOTE: Empty
+impl<T: RandomNumber + fmt::Debug> From<PowerSocket<T>> for Device<T> {
+    fn from(socket: PowerSocket<T>) -> Self {
+        Device::Socket(socket)
     }
 }
 
-impl PrintVisitor for PrintStateVisitor {
-    fn new(device_index: usize) -> Self {
-        Self { device_index }
+impl<T: RandomNumber + fmt::Debug> From<CelsiusThermometer<T>> for Device<T> {
+    fn from(thermometer: CelsiusThermometer<T>) -> Self {
+        Device::Thermometer(thermometer)
     }
 }
 
-impl<T: RandomNumber + FromPrimitive + Debug> DeviceVisitor<T> for PrintStateVisitor {
-    fn visit_socket(&mut self, socket: &mut PowerSocket<T>) {
-        let state = socket.get_state();
-        let power = socket.get_power();
-
-        println!(
-            "Device {} (socket): state = {}, power = {:?}",
-            self.device_index,
-            match state {
-                SocketState::ON => "ON",
-                SocketState::OFF => "OFF",
-            },
-            power
-        );
-    }
-
-    fn visit_thermometer(&mut self, thermometer: &mut CelsiusThermometer<T>) {
-        let temperature = thermometer.get_temperature();
-
-        println!(
-            "Device {} (thermometer): temperature = {:?}",
-            self.device_index, temperature
-        );
+impl<T: RandomNumber + fmt::Debug> fmt::Debug for Device<T> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Device::Socket(s) => write!(formatter, "Device::Socket({:?})", s),
+            Device::Thermometer(t) => write!(formatter, "Device::Thermometer({:?})", t),
+        }
     }
 }
 
-pub trait Device<T: RandomNumber> {
-    fn accept(&mut self, visitor: &mut dyn DeviceVisitor<T>);
-}
-
-impl<TemperatureT: RandomNumber + FromPrimitive + Debug> Device<TemperatureT>
-    for CelsiusThermometer<TemperatureT>
-{
-    fn accept(&mut self, visitor: &mut dyn DeviceVisitor<TemperatureT>) {
-        visitor.visit_thermometer(self);
-    }
-}
-
-impl<PowerT: RandomNumber + FromPrimitive + Debug> Device<PowerT> for PowerSocket<PowerT> {
-    fn accept(&mut self, visitor: &mut dyn DeviceVisitor<PowerT>) {
-        visitor.visit_socket(self);
+impl<T: RandomNumber + fmt::Debug> Report for Device<T> {
+    fn report(&self) -> String {
+        match self {
+            Device::Socket(socket) => socket.report(),
+            Device::Thermometer(thermometer) => thermometer.report(),
+        }
     }
 }

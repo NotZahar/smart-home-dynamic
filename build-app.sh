@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $REMOVE_TARGET; then
-	rm -rf /root/workspace/smart-home/target
+	rm -rf /root/workspace/smart-home-dynamic/target
 fi
 
 echo "Build type is ${BUILD_MODE}"

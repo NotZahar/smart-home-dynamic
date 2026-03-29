@@ -8,6 +8,7 @@ pub trait RandomGenerator<T: RandomNumber> {
     fn generate(&mut self, min: T, max: T) -> T;
 }
 
+#[derive(Debug)]
 pub struct SimpleRandomGenerator<T: RandomNumber> {
     generator: rand::rngs::ThreadRng,
     _phantom_for_t: PhantomData<T>,

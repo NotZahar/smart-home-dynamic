@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+
+cd "$SCRIPT_DIR"
+
 BUILD_MODE="debug"
 
 while [[ $# -gt 0 ]]; do
@@ -29,12 +33,12 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-BINARY_FOLDER_PATH="/root/workspace/smart-home-dynamic/target/$BUILD_MODE"
+BINARY_FOLDER_PATH="target/$BUILD_MODE"
 
 if [[ ! -d "$BINARY_FOLDER_PATH" ]]; then
 	echo "Error: binary not found at $BINARY_FOLDER_PATH"
 	exit 1
 fi
 
-cd $BINARY_FOLDER_PATH
+cd "$BINARY_FOLDER_PATH"
 ./smart-home-dynamic

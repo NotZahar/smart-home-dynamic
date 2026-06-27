@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+
+cd "$SCRIPT_DIR"
+
 BUILD_MODE="debug"
 BUILD_FLAG=""
 REMOVE_TARGET=true
@@ -38,7 +42,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $REMOVE_TARGET; then
-	rm -rf /root/workspace/smart-home-dynamic/target
+	rm -rf target
 fi
 
 echo "Build type is ${BUILD_MODE}"
